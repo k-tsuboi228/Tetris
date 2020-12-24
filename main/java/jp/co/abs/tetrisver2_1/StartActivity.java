@@ -15,31 +15,35 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class StartActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener {
 
-    private ScoreDB mScoreDB;
-    private TextView mHighScoreView;
-    private Switch mBGMSwitch;
+    private static final String DB_TABLE_NAME = "scoreDB";
+    private static final String COLUMN_NAME_SCORE = "score";
+    private static final String COLUMN_NAME_LINE = "line";
+    private static final String ORDER_BY = "score DESC, line ASC";
 
+    private static final int COLUMN_INDEX_SCORE = 0;
+    private static final int COLUMN_INDEX_LINE = 1;
+
+    private Switch mBGMSwitch;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
+
 //DB作成
-        mScoreDB = new ScoreDB(getApplicationContext());
+       ScoreDB scoreDB = new ScoreDB(getApplicationContext());
 
-        mHighScoreView = findViewById(R.id.highScore);
+       TextView highScoreView = findViewById(R.id.highScore);
 
-        SQLiteDatabase db = mScoreDB.getReadableDatabase();
-
-        String order_by = "score DESC, line ASC";
+        SQLiteDatabase db = scoreDB.getReadableDatabase();
 
         Cursor cursor = db.query(
-                "scoreDB",
-                new String[]{"score", "line"},
+                DB_TABLE_NAME,
+                new String[]{COLUMN_NAME_SCORE, COLUMN_NAME_LINE},
                 null,
                 null,
                 null,
                 null,
-                order_by
+                ORDER_BY
         );
 
         boolean mov = cursor.moveToFirst();
@@ -49,38 +53,38 @@ public class StartActivity extends AppCompatActivity implements CompoundButton.O
         if (mov) {
             for (int i = 0; i < 3; i++) {
                 sBuilder.append("Score: ");
-                sBuilder.append(cursor.getInt(0));
+                sBuilder.append(cursor.getInt(COLUMN_INDEX_SCORE));
                 sBuilder.append("\t" + "Line: ");
-                sBuilder.append(cursor.getInt(1) + "\n");
+                sBuilder.append(cursor.getInt(COLUMN_INDEX_LINE) + "\n");
                 cursor.moveToNext();
             }
         }
 
         cursor.close();
 
-        mHighScoreView.setText(sBuilder.toString());
+        highScoreView.setText(sBuilder.toString());
         mBGMSwitch = findViewById(R.id.BGMSwitch);
 
         mBGMSwitch.setOnCheckedChangeListener(this);
     }
 
     public void onClick(View view) {
-        Intent intent = new Intent(this, TetrisActivity.class);
+        Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();
     }
 
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-        SharedPreferences Count = getSharedPreferences("DataSave", Context.MODE_PRIVATE);
+        SharedPreferences Count = getSharedPreferences(PrefConst.PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor Editor = Count.edit();
 
-        Editor.putBoolean("Switch", isChecked);
+        Editor.putBoolean(PrefConst.KEY_BGM_STATUS, isChecked);
 
         Editor.apply();
         Editor.commit();
 
-        if (isChecked == true) {
+        if (isChecked) {
             mBGMSwitch.setText("ON");
         } else {
             mBGMSwitch.setText("OFF");
