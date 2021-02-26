@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">TetrisVer2</string>
+    <string name="text_score">Score: %1$d</string>
+    <string name="text_line">Line: %1$d</string>
+    <string name="bgm_switch_on">ON</string>
+    <string name="bgm_switch_off">OFF</string>
 </resources>

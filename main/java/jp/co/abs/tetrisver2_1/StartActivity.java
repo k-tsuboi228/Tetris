@@ -8,10 +8,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.CompoundButton;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 
 public class StartActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener {
 
@@ -23,16 +23,17 @@ public class StartActivity extends AppCompatActivity implements CompoundButton.O
     private static final int COLUMN_INDEX_SCORE = 0;
     private static final int COLUMN_INDEX_LINE = 1;
 
-    private Switch mBGMSwitch;
+    private SwitchCompat mBGMSwitch;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
 
 //DB作成
-       ScoreDB scoreDB = new ScoreDB(getApplicationContext());
+        ScoreDB scoreDB = new ScoreDB(getApplicationContext());
 
-       TextView highScoreView = findViewById(R.id.highScore);
+        TextView highScoreView = findViewById(R.id.highScore);
 
         SQLiteDatabase db = scoreDB.getReadableDatabase();
 
@@ -52,10 +53,11 @@ public class StartActivity extends AppCompatActivity implements CompoundButton.O
 
         if (mov) {
             for (int i = 0; i < 3; i++) {
-                sBuilder.append("Score: ");
-                sBuilder.append(cursor.getInt(COLUMN_INDEX_SCORE));
-                sBuilder.append("\t" + "Line: ");
-                sBuilder.append(cursor.getInt(COLUMN_INDEX_LINE) + "\n");
+                sBuilder.append("Score: ")
+                        .append(cursor.getInt(COLUMN_INDEX_SCORE))
+                        .append("\t Line: ")
+                        .append(cursor.getInt(COLUMN_INDEX_LINE))
+                        .append("\n");
                 cursor.moveToNext();
             }
         }
@@ -85,9 +87,9 @@ public class StartActivity extends AppCompatActivity implements CompoundButton.O
         Editor.commit();
 
         if (isChecked) {
-            mBGMSwitch.setText("ON");
+            mBGMSwitch.setText(getString(R.string.bgm_switch_on));
         } else {
-            mBGMSwitch.setText("OFF");
+            mBGMSwitch.setText(getString(R.string.bgm_switch_off));
         }
     }
 }

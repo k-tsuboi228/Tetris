@@ -1,8 +1,7 @@
 package jp.co.abs.tetrisver2_1;
 
-import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -11,7 +10,16 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class EndActivity extends AppCompatActivity {
 
-    private ScoreDB mScoreDB;
+    private static final String INTENT_PARAM_SCORE = "score";
+    private static final String INTENT_PARAM_LINE = "line";
+
+    public static Intent createMainActivityIntent(Context context, int score, int line){
+        Intent intent = new Intent(context, EndActivity.class);
+        intent.putExtra(INTENT_PARAM_SCORE,score);
+        intent.putExtra(INTENT_PARAM_LINE,line);
+
+        return intent;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,28 +27,19 @@ public class EndActivity extends AppCompatActivity {
         setContentView(R.layout.activity_end);
 
         //DB作成
-        mScoreDB = new ScoreDB(getApplicationContext());
+        ScoreDB scoreDB = new ScoreDB(getApplicationContext());
 
         TextView scoreView = findViewById(R.id.Score);
         TextView lineView = findViewById(R.id.Line);
 
         Intent intent = getIntent();
         int gameScore = intent.getIntExtra("score", 0);
-        String score = String.valueOf(gameScore);
         int deleteLine = intent.getIntExtra("line", 0);
-        String line = String.valueOf(deleteLine);
 
-        scoreView.setText("Score: " + score);
-        lineView.setText("Line: " + line);
+        scoreView.setText(getString(R.string.text_score, gameScore));
+        lineView.setText(getString(R.string.text_line, deleteLine));
 
-        SQLiteDatabase db = mScoreDB.getWritableDatabase();
-        ContentValues values = new ContentValues();
-
-        values.put("score", gameScore);
-        values.put("line", deleteLine);
-
-        db.insert("scoreDB", null, values);
-
+        scoreDB.saveData(gameScore, deleteLine);
     }
 
     public void onClick(View view) {

@@ -10,7 +10,7 @@ public class ScoreDB extends SQLiteOpenHelper {
 
     private static final int DATABASE_VERSION = 3;
 
-    private static final String DATABASE_NAME = "bScoreDB.db";
+    private static final String DATABASE_NAME = "ScoreDB.db";
     private static final String TABLE_NAME = "scoreDB";
     private static final String _ID = "_id";
     private static final String COLUMN_NAME_TITLE = "score";
@@ -35,9 +35,9 @@ public class ScoreDB extends SQLiteOpenHelper {
                 SQL_CREATE_ENTRIES
         );
 
-        saveData(db, 0, 0);
-        saveData(db, 0, 0);
-        saveData(db, 0, 0);
+        saveData(0,0);
+        saveData(0,0);
+        saveData(0,0);
     }
 
     @Override
@@ -52,7 +52,14 @@ public class ScoreDB extends SQLiteOpenHelper {
         onUpgrade(db, oldVersion, newVersion);
     }
 
-    public void saveData(SQLiteDatabase db, int score, int line) {
+    /**
+     * データベースにデータを保存する
+     *
+     * @param score テトリスのスコア
+     * @param line  テトリスの消去ライン数
+     */
+    public void saveData(int score, int line) {
+        SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("score", score);
         values.put("line", line);
